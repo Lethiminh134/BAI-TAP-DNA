@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Luyện Tập Cấu Trúc DNA & Nhân Đôi DNA</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .text-justify-custom {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-4xl mx-auto space-y-8">
+        
+        <!-- HEADER SECTION -->
+        <header class="text-center bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-blue-700 tracking-tight uppercase">
+                HỆ THỐNG LUYỆN TẬP
+            </h1>
+            <h2 class="text-lg sm:text-xl font-bold text-slate-700 mt-2 uppercase tracking-wide">
+                CẤU TRÚC PHÂN TỬ DNA - NHÂN ĐÔI DNA
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-2">
+                Hệ thống sinh bài tập tự động &amp; rèn luyện kỹ năng giải bài tập Sinh học
+            </p>
+        </header>
+
+        <!-- STUDENT IDENTIFICATION SECTION (Shown if not logged in) -->
+        <section id="login-section" class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+            <div class="max-w-md mx-auto space-y-4">
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600 mb-3">
+                        <i class="fa-solid fa-user-graduate text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800">Thông tin học viên</h3>
+                    <p class="text-sm text-slate-500">Vui lòng nhập tên và lớp để bắt đầu làm bài</p>
+                </div>
+                
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 pt-2">
+                    <div>
+                        <label for="student-name" class="block text-sm font-semibold text-slate-700 mb-1">Họ và tên <span class="text-red-500">*</span></label>
+                        <input type="text" id="student-name" required placeholder="Ví dụ: Nguyễn Văn A" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label for="student-class" class="block text-sm font-semibold text-slate-700 mb-1">Lớp <span class="text-red-500">*</span></label>
+                        <input type="text" id="student-class" required placeholder="Ví dụ: 12A1" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                    </div>
+                    <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center space-x-2">
+                        <span>Bắt đầu làm bài</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- EXERCISE PRACTICE SECTION (Hidden until logged in) -->
+        <section id="practice-section" class="hidden space-y-6">
+            
+            <!-- Student Status Bar -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-blue-600 font-semibold uppercase">Đang làm bài</div>
+                        <div class="font-bold text-slate-800" id="display-student-info">Học viên: -- | Lớp: --</div>
+                    </div>
+                </div>
+                <button onclick="logoutStudent()" class="text-xs bg-white text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Đổi học viên
+                </button>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <!-- Question Tag -->
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <span id="question-tag" class="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 font-semibold text-xs rounded-full">
+                        Dạng bài: Cấu trúc DNA
+                    </span>
+                    <span class="text-xs text-slate-400 font-medium">Tự động sinh đề</span>
+                </div>
+
+                <!-- Question Text -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Đề bài:</h3>
+                    <div id="question-text" class="text-base sm:text-lg text-slate-800 leading-relaxed text-justify-custom font-medium">
+                        <!-- Content dynamically generated -->
+                    </div>
+                    <p id="rounding-instruction" class="text-xs text-amber-600 font-semibold italic mt-1"></p>
+                </div>
+
+                <!-- Input & Actions Form -->
+                <div class="pt-2 border-t border-slate-100 space-y-4">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <div class="relative flex-1">
+                            <input type="text" id="user-answer" placeholder="Nhập kết quả số (tối đa 4 ký tự)..." 
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-lg font-medium"
+                                maxlength="6">
+                        </div>
+                        <button onclick="checkAnswer()" class="py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm hover:shadow transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Kiểm tra kết quả</span>
+                        </button>
+                    </div>
+
+                    <!-- New Problem Button -->
+                    <div class="flex justify-end">
+                        <button onclick="generateNewQuestion()" class="py-2.5 px-5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition flex items-center space-x-2">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Làm lại bài tương tự</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feedback & Solution Display -->
+                <div id="solution-box" class="hidden rounded-xl p-5 border transition-all space-y-3">
+                    <div id="feedback-header" class="flex items-center space-x-2 font-bold text-lg">
+                        <!-- Dynamic Header -->
+                    </div>
+                    <div class="text-slate-700 text-sm space-y-2 pt-2 border-t border-slate-200/60">
+                        <div class="font-bold text-slate-800"><i class="fa-solid fa-lightbulb text-amber-500 mr-1.5"></i> Lời giải chi tiết:</div>
+                        <div id="solution-content" class="leading-relaxed bg-white/70 p-4 rounded-lg border border-slate-200/50 space-y-2">
+                            <!-- Solution text dynamically inserted -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEADERBOARD & PARTICIPANT LIST SECTION -->
+        <section class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-4">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-amber-500"></i>
+                        DANH SÁCH HỌC VIÊN THAM GIA
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Xếp hạng theo số lượt trả lời đúng và tỉ lệ chính xác</p>
+                </div>
+                <button onclick="clearHistory()" class="text-xs text-slate-400 hover:text-red-500 transition">
+                    <i class="fa-solid fa-trash-can mr-1"></i>Xóa lịch sử
+                </button>
+            </div>
+
+            <!-- Leaderboard Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+                            <th class="py-3 px-4">Hạng</th>
+                            <th class="py-3 px-4">Họ và tên</th>
+                            <th class="py-3 px-4">Lớp</th>
+                            <th class="py-3 px-4 text-center">Số lượt làm</th>
+                            <th class="py-3 px-4 text-center">Số lần đúng</th>
+                            <th class="py-3 px-4 text-right">Tỉ lệ đúng</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body" class="divide-y divide-slate-100 text-sm">
+                        <!-- Dynamic Rows -->
+                        <tr>
+                            <td colspan="6" class="py-6 text-center text-slate-400 italic">Chưa có thông tin học viên tham gia.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Detailed Activity Log -->
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Nhật ký kết quả làm bài gần nhất
+                </h4>
+                <div id="activity-logs" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    <div class="text-xs text-slate-400 italic text-center py-2">Chưa có lượt làm bài nào được ghi nhận.</div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // App State
+        let currentUser = null; // { name: string, class: string }
+        let currentQuestion = null; // Stores currently generated question
+        let isAnswerSubmitted = false;
+        
+        // Persistent Data from localStorage
+        let leaderboardData = JSON.parse(localStorage.getItem('dna_leaderboard') || '[]');
+        let activityLogs = JSON.parse(localStorage.getItem('dna_activity_logs') || '[]');
+
+        // Global Helper: Clean Math Formats according to prompt rules
+        // 1. +- -> -
+        // 2. 4/1 -> 4 (simplify fractions)
+        function cleanMathFormat(text) {
+            if (typeof text !== 'string') text = String(text);
+            return text
+                .replace(/\+\-/g, '-')
+                .replace(/\b(\d+)\/1\b/g, '$1')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // Handle Login
+        function handleLogin(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('student-name').value.trim();
+            const classInput = document.getElementById('student-class').value.trim();
+
+            if (!nameInput || !classInput) return;
+
+            currentUser = { name: nameInput, class: classInput };
+            
+            // UI Switch
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('practice-section').classList.remove('hidden');
+            document.getElementById('display-student-info').textContent = `Học viên: ${currentUser.name} | Lớp: ${currentUser.class}`;
+
+            // Initialize Question
+            generateNewQuestion();
+            renderLeaderboard();
+            renderLogs();
+        }
+
+        // Logout / Switch Student
+        function logoutStudent() {
+            currentUser = null;
+            document.getElementById('practice-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+        }
+
+        // Helper: Random Integer between min and max inclusive
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Helper: Random Choice from array
+        function getRandomChoice(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateNewQuestion() {
+            isAnswerSubmitted = false;
+            document.getElementById('user-answer').value = '';
+            document.getElementById('solution-box').classList.add('hidden');
+
+            const questionTypes = [
+                'TOTAL_NUC_FROM_LENGTH',
+                'HYDROGEN_BONDS',
+                'DNA_REPLICATION_MOLECULES',
+                'DNA_REPLICATION_NUC',
+                'PERCENT_AND_COUNT',
+                'HELICAL_TURNS'
+            ];
+
+            const selectedType = getRandomChoice(questionTypes);
+            let q = {};
+
+            switch (selectedType) {
+                case 'TOTAL_NUC_FROM_LENGTH': {
+                    // L in Angstrom (multiple of 34 or clean number)
+                    const C = getRandomInt(10, 25) * 10; // e.g. 120, 150, 200
+                    const N = C * 20; // e.g. 2400
+                    const L = C * 34; // e.g. 4080 Å
+                    
+                    q.tag = "Cấu trúc DNA: Tính tổng số Nucleotide";
+                    q.text = cleanMathFormat(`Một phân tử DNA (hoặc đoạn gen) có chiều dài là ${L} Å. Hãy tính tổng số nucleotide (N) của phân tử DNA này.`);
+                    q.rounding = "Kết quả là một số nguyên.";
+                    q.rawAnswer = N;
+                    q.answerStr = String(N);
+                    q.solution = cleanMathFormat(`
+                        • <strong>Bước 1:</strong> Sử dụng công thức mối liên hệ giữa chiều dài (L) và tổng số nucleotide (N):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;L = (N / 2) × 3,4 Å &rArr; N = (L × 2) / 3,4<br>
+                        • <strong>Bước 2:</strong> Thay số vào công thức:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;N = (${L} × 2) / 3,4 = ${N} (nucleotide).
+                    `);
+                    break;
+                }
+
+                case 'HYDROGEN_BONDS': {
+                    // N from 1200 to 3000
+                    const N = getRandomInt(6, 15) * 200; // e.g. 2400
+                    const pctA = getRandomChoice([15, 20, 25, 30]); // %
+                    const A = (N * pctA) / 100;
+                    const G = (N / 2) - A;
+                    const H = 2 * A + 3 * G;
+
+                    q.tag = "Cấu trúc DNA: Tính liên kết Hydrogen";
+                    q.text = cleanMathFormat(`Một gen có tổng số ${N} nucleotide. Trong đó, loại Adenine (A) chiếm ${pctA}% tổng số nucleotide của gen. Tính tổng số liên kết hydrogen (H) của gen này.`);
+                    q.rounding = "Kết quả là một số nguyên.";
+                    q.rawAnswer = H;
+                    q.answerStr = String(H);
+                    q.solution = cleanMathFormat(`
+                        • <strong>Bước 1:</strong> Tính số nucleotide loại A = T:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;A = T = ${N} × ${pctA}% = ${A} (nucleotide).<br>
+                        • <strong>Bước 2:</strong> Tính số nucleotide loại G = C:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;G = C = (${N} / 2) - A = ${N/2} - ${A} = ${G} (nucleotide).<br>
+                        • <strong>Bước 3:</strong> Tính số liên kết hydrogen (H):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;H = 2A + 3G = 2 × ${A} + 3 × ${G} = ${2*A} + ${3*G} = ${H} (liên kết).
+                    `);
+                    break;
+                }
+
+                case 'DNA_REPLICATION_MOLECULES': {
+                    const k = getRandomInt(2, 5); // Number of replications
+                    const totalDNA = Math.pow(2, k);
+                    const newDNA = totalDNA - 2; // Entirely new DNA
+
+                    const askType = getRandomChoice(['TOTAL', 'NEW']);
+
+                    if (askType === 'TOTAL') {
+                        q.tag = "Nhân đôi DNA: Số phân tử DNA con";
+                        q.text = cleanMathFormat(`Một phân tử DNA thực hiện nhân đôi liên tiếp ${k} lần trong môi trường nội bào. Tính tổng số phân tử DNA con được tạo ra.`);
+                        q.rounding = "Kết quả là một số nguyên.";
+                        q.rawAnswer = totalDNA;
+                        q.answerStr = String(totalDNA);
+                        q.solution = cleanMathFormat(`
+                            • <strong>Công thức:</strong> Từ 1 phân tử DNA ban đầu qua k lần nhân đôi tạo ra 2<sup>k</sup> phân tử DNA con.<br>
+                            • <strong>Thế số:</strong> Số DNA con = 2<sup>${k}}</sup> = ${totalDNA} (phân tử).
+                        `);
+                    } else {
+                        q.tag = "Nhân đôi DNA: Số DNA con mới hoàn toàn";
+                        q.text = cleanMathFormat(`Một phân tử DNA thực hiện nhân đôi liên tiếp ${k} lần. Tính số phân tử DNA con được cấu tạo hoàn toàn từ nguyên liệu (nucleotide) mới của môi trường.`);
+                        q.rounding = "Kết quả là một số nguyên.";
+                        q.rawAnswer = newDNA;
+                        q.answerStr = String(newDNA);
+                        q.solution = cleanMathFormat(`
+                            • <strong>Bước 1:</strong> Tổng số DNA con được tạo ra = 2<sup>${k}}</sup> = ${totalDNA} (phân tử).<br>
+                            • <strong>Bước 2:</strong> Luôn có đúng 2 phân tử DNA con còn chứa 1 mạch cũ của DNA mẹ ban đầu.<br>
+                            • <strong>Bước 3:</strong> Số DNA con hoàn toàn mới = 2<sup>${k}}</sup> - 2 = ${totalDNA} - 2 = ${newDNA} (phân tử).
+                        `);
+                    }
+                    break;
+                }
+
+                case 'DNA_REPLICATION_NUC': {
+                    const A = getRandomInt(3, 8) * 100; // e.g. 400
+                    const k = getRandomInt(2, 4); // 2, 3, 4
+                    const Amt = A * (Math.pow(2, k) - 1);
+
+                    q.tag = "Nhân đôi DNA: Nucleotide môi trường cung cấp";
+                    q.text = cleanMathFormat(`Một gen có chứa ${A} nucleotide loại Adenine (A). Gen này nhân đôi liên tiếp ${k} lần. Tính tổng số nucleotide loại A mà môi trường nội bào cần cung cấp cho quá trình nhân đôi này.`);
+                    q.rounding = "Kết quả là một số nguyên.";
+                    q.rawAnswer = Amt;
+                    q.answerStr = String(Amt);
+                    q.solution = cleanMathFormat(`
+                        • <strong>Công thức:</strong> Nuc loại X môi trường cung cấp = X × (2<sup>k</sup> - 1).<br>
+                        • <strong>Thế số:</strong> A<sub>mt</sub> = ${A} × (2<sup>${k}}</sup> - 1) = ${A} × (${Math.pow(2, k)} - 1) = ${A} × ${Math.pow(2, k) - 1} = ${Amt} (nucleotide).
+                    `);
+                    break;
+                }
+
+                case 'PERCENT_AND_COUNT': {
+                    // Problem returning clean decimal like 0.25, 0.3, 0.4
+                    const pctG = getRandomChoice([10, 15, 20, 25, 30, 35, 40]);
+                    const fractionDecimal = (pctG / 100).toFixed(2); // e.g. 0.25
+                    
+                    q.tag = "Cấu trúc DNA: Tỉ lệ phần trăm nuc";
+                    q.text = cleanMathFormat(`Một đoạn DNA có số nucleotide loại Guanine (G) chiếm ${pctG}% tổng số nucleotide. Hãy tính tỉ lệ của loại nucleotide Guanine (G) dưới dạng số thập phân. (Yêu cầu làm tròn kết quả đến hàng phần trăm).`);
+                    q.rounding = "Yêu cầu làm tròn kết quả đến hàng phần trăm (Ví dụ: 0.25).";
+                    q.rawAnswer = parseFloat(fractionDecimal);
+                    q.answerStr = String(parseFloat(fractionDecimal));
+                    q.solution = cleanMathFormat(`
+                        • <strong>Bước 1:</strong> Đổi tỉ lệ % sang dạng số thập phân:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Tỉ lệ G = ${pctG}% = ${pctG} / 100 = ${fractionDecimal}.<br>
+                        • <strong>Kết quả:</strong> ${fractionDecimal}
+                    `);
+                    break;
+                }
+
+                case 'HELICAL_TURNS': {
+                    const C = getRandomInt(5, 20) * 10; // e.g. 150
+                    const N = C * 20;
+
+                    q.tag = "Cấu trúc DNA: Tính Chu kỳ xoắn";
+                    q.text = cleanMathFormat(`Một đoạn phân tử DNA có tổng số ${N} nucleotide. Hãy tính số chu kỳ xoắn (C) của đoạn DNA này.`);
+                    q.rounding = "Kết quả là một số nguyên.";
+                    q.rawAnswer = C;
+                    q.answerStr = String(C);
+                    q.solution = cleanMathFormat(`
+                        • <strong>Công thức:</strong> Mỗi chu kỳ xoắn gồm 20 nucleotide &rArr; C = N / 20.<br>
+                        • <strong>Thế số:</strong> C = ${N} / 20 = ${C} (chu kỳ).
+                    `);
+                    break;
+                }
+            }
+
+            currentQuestion = q;
+            renderQuestion();
+        }
+
+        // Render current question into UI
+        function renderQuestion() {
+            document.getElementById('question-tag').textContent = currentQuestion.tag;
+            document.getElementById('question-text').innerHTML = currentQuestion.text;
+            document.getElementById('rounding-instruction').textContent = currentQuestion.rounding;
+        }
+
+        // Check Answer
+        function checkAnswer() {
+            if (!currentUser) return;
+
+            const inputEl = document.getElementById('user-answer');
+            const rawUserVal = inputEl.value.trim().replace(',', '.');
+
+            if (!rawUserVal) {
+                alert("Vui lòng nhập kết quả trước khi kiểm tra!");
+                return;
+            }
+
+            const userNum = parseFloat(rawUserVal);
+            const correctNum = currentQuestion.rawAnswer;
+
+            // Allow small float tolerance for rounding comparisons (e.g. 0.25 vs 0.25)
+            const isCorrect = !isNaN(userNum) && Math.abs(userNum - correctNum) < 0.009;
+
+            // Display Feedback Box
+            const solutionBox = document.getElementById('solution-box');
+            const feedbackHeader = document.getElementById('feedback-header');
+            const solutionContent = document.getElementById('solution-content');
+
+            solutionBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'bg-rose-50', 'border-rose-200');
+
+            if (isCorrect) {
+                solutionBox.classList.add('bg-emerald-50', 'border-emerald-200');
+                feedbackHeader.className = "flex items-center space-x-2 font-bold text-lg text-emerald-700";
+                feedbackHeader.innerHTML = `<i class="fa-solid fa-circle-check text-xl"></i> <span>Chính xác! Bạn làm rất tốt.</span>`;
+            } else {
+                solutionBox.classList.add('bg-rose-50', 'border-rose-200');
+                feedbackHeader.className = "flex items-center space-x-2 font-bold text-lg text-rose-700";
+                feedbackHeader.innerHTML = `<i class="fa-solid fa-circle-xmark text-xl"></i> <span>Chưa chính xác! Đáp án đúng là: ${currentQuestion.answerStr}</span>`;
+            }
+
+            solutionContent.innerHTML = currentQuestion.solution;
+
+            // Save Activity Log and Leaderboard update only once per question attempt
+            if (!isAnswerSubmitted) {
+                isAnswerSubmitted = true;
+                recordResult(currentUser.name, currentUser.class, currentQuestion.tag, rawUserVal, currentQuestion.answerStr, isCorrect);
+            }
+        }
+
+        // Record student performance & update leaderboard
+        function recordResult(name, studentClass, tag, userAns, correctAns, isCorrect) {
+            // 1. Update Leaderboard Entry
+            let student = leaderboardData.find(s => s.name.toLowerCase() === name.toLowerCase() && s.class.toLowerCase() === studentClass.toLowerCase());
+
+            if (!student) {
+                student = { name: name, class: studentClass, attempts: 0, correct: 0 };
+                leaderboardData.push(student);
+            }
+
+            student.attempts += 1;
+            if (isCorrect) {
+                student.correct += 1;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('dna_leaderboard', JSON.stringify(leaderboardData));
+
+            // 2. Add Activity Log
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            activityLogs.unshift({
+                time: timeStr,
+                name: name,
+                class: studentClass,
+                tag: tag,
+                userAns: userAns,
+                correctAns: correctAns,
+                isCorrect: isCorrect
+            });
+
+            // Keep max 50 log items
+            if (activityLogs.length > 50) activityLogs.pop();
+            localStorage.setItem('dna_activity_logs', JSON.stringify(activityLogs));
+
+            // Refresh UI Tables
+            renderLeaderboard();
+            renderLogs();
+        }
+
+        // Render Sorted Leaderboard (Sorted by total correct descending, then accuracy)
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboard-body');
+            
+            if (leaderboardData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400 italic">Chưa có thông tin học viên tham gia.</td></tr>`;
+                return;
+            }
+
+            // Sort logic: Highest correct answers first, then higher accuracy
+            const sorted = [...leaderboardData].sort((a, b) => {
+                if (b.correct !== a.correct) {
+                    return b.correct - a.correct;
+                }
+                const accA = a.attempts ? (a.correct / a.attempts) : 0;
+                const accB = b.attempts ? (b.correct / b.attempts) : 0;
+                return accB - accA;
+            });
+
+            tbody.innerHTML = sorted.map((s, idx) => {
+                const acc = s.attempts ? Math.round((s.correct / s.attempts) * 100) : 0;
+                let badgeClass = "bg-slate-100 text-slate-600";
+                if (idx === 0) badgeClass = "bg-amber-100 text-amber-700 font-bold";
+                else if (idx === 1) badgeClass = "bg-slate-200 text-slate-700 font-bold";
+                else if (idx === 2) badgeClass = "bg-amber-50 text-amber-800 font-bold";
+
+                return `
+                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                        <td class="py-3 px-4">
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs ${badgeClass}">
+                                ${idx + 1}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 font-semibold text-slate-800">${escapeHtml(s.name)}</td>
+                        <td class="py-3 px-4 text-slate-600">${escapeHtml(s.class)}</td>
+                        <td class="py-3 px-4 text-center font-medium">${s.attempts}</td>
+                        <td class="py-3 px-4 text-center font-bold text-emerald-600">${s.correct}</td>
+                        <td class="py-3 px-4 text-right font-medium text-slate-700">${acc}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render Activity Logs
+        function renderLogs() {
+            const container = document.getElementById('activity-logs');
+            if (activityLogs.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-400 italic text-center py-2">Chưa có lượt làm bài nào được ghi nhận.</div>`;
+                return;
+            }
+
+            container.innerHTML = activityLogs.map(log => {
+                const icon = log.isCorrect 
+                    ? `<i class="fa-solid fa-circle-check text-emerald-500"></i>` 
+                    : `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                
+                const statusBg = log.isCorrect ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100';
+
+                return `
+                    <div class="text-xs p-2.5 rounded-lg border ${statusBg} flex flex-col sm:flex-row justify-between sm:items-center gap-1">
+                        <div class="flex items-center space-x-2">
+                            <span>${icon}</span>
+                            <span class="font-bold text-slate-800">${escapeHtml(log.name)} (${escapeHtml(log.class)})</span>
+                            <span class="text-slate-500">• ${escapeHtml(log.tag)}</span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-slate-600 text-right">
+                            <span>Trả lời: <strong>${escapeHtml(log.userAns)}</strong> (${log.isCorrect ? 'Đúng' : 'Sai, ĐA: ' + log.correctAns})</span>
+                            <span class="text-slate-400 text-[10px]">${log.time}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Clear History
+        function clearHistory() {
+            if (confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử học viên và kết quả làm bài không?")) {
+                leaderboardData = [];
+                activityLogs = [];
+                localStorage.removeItem('dna_leaderboard');
+                localStorage.removeItem('dna_activity_logs');
+                renderLeaderboard();
+                renderLogs();
+            }
+        }
+
+        // Utility: Escape HTML to prevent XSS
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize display on load
+        window.onload = function() {
+            renderLeaderboard();
+            renderLogs();
+        };
+    </script>
+</body>
+</html>
